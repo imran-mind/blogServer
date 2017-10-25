@@ -1,0 +1,42 @@
+
+
+
+============profile====================
+{ id: '15902426',
+  displayName: null,
+  username: 'imran47billion',
+  profileUrl: 'https://github.com/imran47billion',
+  provider: 'github',
+  _raw: '{"login":"imran47billion","id":15902426,"avatar_url":"https://avatars2.githubusercontent.com/u/15902426?v=4","gravatar_id":"","url":"https://api.github.com/users/imran47billion","html_url":"https://github.com/imran47billion","followers_url":"https://api.github.com/users/imran47billion/followers","following_url":"https://api.github.com/users/imran47billion/following{/other_user}","gists_url":"https://api.github.com/users/imran47billion/gists{/gist_id}","starred_url":"https://api.github.com/users/imran47billion/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/imran47billion/subscriptions","organizations_url":"https://api.github.com/users/imran47billion/orgs","repos_url":"https://api.github.com/users/imran47billion/repos","events_url":"https://api.github.com/users/imran47billion/events{/privacy}","received_events_url":"https://api.github.com/users/imran47billion/received_events","type":"User","site_admin":false,"name":null,"company":null,"blog":"","location":null,"email":null,"hireable":null,"bio":null,"public_repos":5,"public_gists":0,"followers":0,"following":0,"created_at":"2015-11-18T05:36:27Z","updated_at":"2017-09-14T07:29:22Z"}',
+  _json:
+   { login: 'imran47billion',
+     id: 15902426,
+     avatar_url: 'https://avatars2.githubusercontent.com/u/15902426?v=4',
+     gravatar_id: '',
+     url: 'https://api.github.com/users/imran47billion',
+     html_url: 'https://github.com/imran47billion',
+     followers_url: 'https://api.github.com/users/imran47billion/followers',
+     following_url: 'https://api.github.com/users/imran47billion/following{/other_user}',
+     gists_url: 'https://api.github.com/users/imran47billion/gists{/gist_id}',
+     starred_url: 'https://api.github.com/users/imran47billion/starred{/owner}{/repo}',
+     subscriptions_url: 'https://api.github.com/users/imran47billion/subscriptions',
+     organizations_url: 'https://api.github.com/users/imran47billion/orgs',
+     repos_url: 'https://api.github.com/users/imran47billion/repos',
+     events_url: 'https://api.github.com/users/imran47billion/events{/privacy}',
+     received_events_url: 'https://api.github.com/users/imran47billion/received_events',
+     type: 'User',
+     site_admin: false,
+     name: null,
+     company: null,
+     blog: '',
+     location: null,
+     email: null,
+     hireable: null,
+     bio: null,
+     public_repos: 5,
+     public_gists: 0,
+     followers: 0,
+     following: 0,
+     created_at: '2015-11-18T05:36:27Z',
+     updated_at: '2017-09-14T07:29:22Z' } }
+================================================

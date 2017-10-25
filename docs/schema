@@ -1,0 +1,14 @@
+
+=>SignUp
+
+Collection Name => user
+
+name -String
+username-String
+password- String
+mobile - String
+email - String
+deleted - String
+created_at - String
+updated_at - String
+

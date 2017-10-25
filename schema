@@ -1,0 +1,138 @@
+
+=====================================================================
+fuser -n tcp -k 9001
+
+process to install and run postgres
+1) sudo apt-get update
+2) sudo apt-get install postgresql postgresql-contrib
+3)sudo -i -u postgres
+3) psql
+4) \l ==> to see database
+
+create database databasename
+
+
+Need to add user role like ADMIN ,SUPER_ADMIN, USER
+
+CREATE TABLE speed_user(speed_id  TEXT primary key ,
+                      first_name TEXT,
+                      last_name TEXT,
+                      email TEXT,
+                      password TEXT,
+                      role TEXT,
+                      provider TEXT,
+                      social_id TEXT,
+                      profile_name TEXT,
+                      deleted BOOLEAN,
+                      refresh_token TEXT,
+                      speed_app_id TEXT,
+                      created_at bigint ,
+                      updated_at bigint
+
+ );
+
+
+
+
+CREATE TABLE speed_app(speed_app_id  TEXT primary key ,
+                      name TEXT,
+                      deleted BOOLEAN,
+                      created_at bigint ,
+                      updated_at bigint
+
+ );
+
+
+CREATE TABLE speed_project(id TEXT PRIMARY KEY NOT NULL ,name TEXT,
+                          deleted BOOLEAN ,created_at bigint ,updated_at bigint);
+
+INSERT INTO speed_project(id,name,deleted,created_at,updated_at) VALUES ('582eafe459ed708e211efa79','Hadoop',false,1506320090,1506320090);
+
+INSERT INTO speed_project(id,name,deleted,created_at,updated_at) VALUES ('582eafe459ed708e211efa80','Java',false,1506320090,1506320090);
+
+
+
+
+CREATE TABLE speed_resource(id TEXT PRIMARY KEY, project_id TEXT REFERENCES speed_project(id), speed_id TEXT 
+                            REFERENCES  speed_user(speed_id),speed_create BOOLEAN, speed_update BOOLEAN, speed_select BOOLEAN, speed_delete  BOOLEAN);
+
+INSERT INTO speed_resource(id,project_id,speed_id,speed_create,speed_update,speed_select,speed_delete) VALUES ('582eafe459ed708e211e123','582eafe459ed708e211efa79','59c8a2ad1e30e91acdf2c67e', true,true,true,true);
+
+
+
+CREATE TABLE speed_grants(id TEXT PRIMARY KEY NOT NULL ,name TEXT,
+                          deleted BOOLEAN ,created_at bigint ,updated_at bigint);
+
+
+CREATE TABLE speed_permission(speed_id TEXT, resource TEXT, action TEXT 
+, attribute TEXT,deleted BOOLEAN, created_at bigint ,updated_at bigint);
+
+passession like any or own
+
+INSERT INTO speed_permission (speed_id ,resource ,action, attribute,deleted,created_at,updated_at)
+VALUES 
+('59c8a2ad1e30e91acdf2c67e','git','create', '',false,1506425126,1506425126),
+('59c8a2ad1e30e91acdf2c67e','git','update', '',false,150642512,1506425126),
+('59c8a2ad1e30e91acdf2c67e','git','read', '',false,1506425126,1506425126),
+('59c8a2ad1e30e91acdf2c67e','git','delete', '',false,150642512,1506425126),
+('59ca2ccd629d3e5df8a3101c','git','read', '',false,1506425126,1506425126);
+
+
+
+('admin','git','update:own', '',false,1506425126),
+('admin','git','read:own', '',false,1506425126),
+('admin','git','delete:own', '',false,1506425126),
+
+('user','hadoop','create:own', ''),
+('user','hadoop','update:own', ''),
+('user','hadoop','read:own', ''),
+('user','hadoop','delete:own', ''),
+('user','hadoop','read:any', '')
+
+
+
+INSERT INTO speed_app (speed_app_id,name,deleted,created_at,updated_at)
+                 VALUES ('585b82eddbcd5b7666e0e451','web', false,1505974014,1505974014),
+                        ('585b82eddbcd5b7666e0e452','android', false,1505974014,1505974014),
+                        ('585b82eddbcd5b7666e0e453','ios', false,1505974014,1505974014);
+
+
+
+59c8a2ad1e30e91acdf2c67e
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------
+user      attributes      read  write  update   delete
+-----------------------------------------------------------------
+admin     git              1      1      0        0
+superadmin    jira             1      1      1        1
+superadmin    tools            1      1      1        1
+superadmin    projec           1      1      1        1
+----------------------------------------------------------------
+
+
+role      resource        action        attributes
+admin       git        create:any
+admin       git        update:any
+admin       git        read:any
+admin       git        delete:any
+
+admin       git        create:own
+admin       git        update:own
+admin       git        read:own
+admin       git        delete:own
+
+admin       git        create:own
+admin       git        update:own
+admin       git        read:own
+
+admin       git        read:any
