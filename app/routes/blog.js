@@ -1,13 +1,16 @@
 require('rootpath');
 var BlogService = require('app/service/blog'),
+    UserService = require('app/service/user'),
     log = require('utils/logger')(module);
 
 var UserOperations = {
     createBlog: createBlog,
+    userSignup: userSignup,
     userSignin: userSignin,
     fetchBlogs: fetchBlogs,
-    fetchUserById: fetchUserById,
-    updateUser: updateUser
+    fetchBlogById: fetchBlogById,
+    updateBlog: updateBlog,
+    deleteBlogById: deleteBlogById
 }
 
 function createBlog(req, res) {
@@ -20,12 +23,24 @@ function createBlog(req, res) {
     });
 }
 
-function userSignin(req, res) {
-    log.info('<--------------userSignin---------------->');
-    UserService.fetchCategories(req.body, function (err, result) {
+function userSignup(req, res) {
+    log.info('<--------------userSignup--blog-------------->', req.body);
+    BlogService.userSignup(req.body, function (err, result) {
         if (err) {
             return res.status(500).json(err);
         }
+        res.status(result.statusCode).json(result);
+    });
+}
+
+
+function userSignin(req, res) {
+    log.info('<--------------userSignin---------------->');
+    BlogService.userSignin(req.body, function (err, result) {
+        if (err) {
+            return res.status(500).json(err);
+        }
+        console.log(result);
         res.status(200).json(result);
     });
 }
@@ -40,9 +55,9 @@ function fetchBlogs(req, res) {
     });
 }
 
-function fetchUserById(req, res) {
-    log.info('<--------------fetchUserById---------------->');
-    UserService.fetchUserById(req.params.userId, function (err, result) {
+function fetchBlogById(req, res) {
+    log.info('<--------------fetchBlogById---------------->');
+    BlogService.fetchBlogById(req.params.id, function (err, result) {
         if (err) {
             return res.status(500).json(err);
         }
@@ -50,9 +65,20 @@ function fetchUserById(req, res) {
     });
 }
 
-function updateUser(req, res) {
-    log.info('<--------------updateUser---------------->');
-    UserService.updateUser(req.params.userId, req.body, function (err, result) {
+function updateBlog(req, res) {
+    log.info('<--------------updateBlog---------------->');
+    BlogService.updateBlog(req.params.id, req.body, function (err, result) {
+        if (err) {
+            return res.status(500).json(err);
+        }
+        res.status(200).json({ message: "success", statusCode: 200, data: result });
+    });
+}
+
+
+function deleteBlogById(req, res) {
+    log.info('<--------------deleteBlogById---------------->', req.params.id);
+    BlogService.deleteBlogById(req.params.id, function (err, result) {
         if (err) {
             return res.status(500).json(err);
         }

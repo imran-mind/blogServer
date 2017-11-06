@@ -9,6 +9,7 @@ var UserModel = new Schema({
     lastName: String,
     username: String,
     password: String,
+    imageUrl: String,
     phone: { type: Number, min: 10, max: 13 },
     deleted: Boolean,
     created_at: Number,

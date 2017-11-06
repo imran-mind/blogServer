@@ -21,14 +21,14 @@ var auth = {
     decodeToken: decodeToken,
     decodeJWTToken: decodeJWTToken,
     createJWT: createJWT,
-    createRefreshJWT: createRefreshJWT,
+    //createRefreshJWT: createRefreshJWT,
     ensureAuthenticated: ensureAuthenticated
 }
 
 function decodeToken(authorization, callback) {
     var token = authorization.split(' ')[1];
     try {
-        var payload = jwt.decode(token, config.token.secret);
+        var payload = jwt.decode(token, 'abc');
         callback(null, payload);
     } catch (err) {
         callback({ message: err.message });
@@ -49,10 +49,10 @@ function createJWT(user) {
         email: user.username,
         iss: 'blogger',
         iat: moment().unix(),
-        exp: moment().add(config.token.expiry, 'seconds').unix()
+        exp: moment().add(32000, 'seconds').unix()
     };
     debug('--->JWT Payload - ', payload);
-    return jwt.encode(payload, config.token.secret);
+    return jwt.encode(payload, 'abc');
 }
 
 function createRefreshJWT(user) {

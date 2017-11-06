@@ -14,24 +14,27 @@ var auth = require('app/helpers/auth'),
     authorRoute = require('app/routes/author');
 
 
-router.post('/users/signup', userRoute.userSignup);
-router.post('/users/signin', userRoute.userSignin);
+router.post('/users/signup', blogRoute.userSignup);
+router.post('/users/signin', blogRoute.userSignin);
 router.get('/users', userRoute.fetchUsers);
 router.get('/users/:userId', userRoute.fetchUserById);
 router.put('/users/:userId', userRoute.updateUser);
+router.put('/users/file/upload/:userId', userRoute.uploadImage);
 
-router.get('/categories', auth.ensureAuthenticated, categoryRoute.fetchCategories);
-router.get('/categories/:id', auth.ensureAuthenticated, categoryRoute.fetchCategoryById);
-router.post('/categories', auth.ensureAuthenticated, categoryRoute.createCategories);
-router.put('/categories/:id', auth.ensureAuthenticated, categoryRoute.updateCategory);
-router.delete('/categories/:id', auth.ensureAuthenticated, categoryRoute.deleteCategoryById);
+router.get('/categories',/*  auth.ensureAuthenticated, */ categoryRoute.fetchCategories);
+router.get('/categories/:id',/*  auth.ensureAuthenticated, */ categoryRoute.fetchCategoryById);
+router.post('/categories', /* auth.ensureAuthenticated, */ categoryRoute.createCategories);
+router.put('/categories/:id', /* auth.ensureAuthenticated, */ categoryRoute.updateCategory);
+router.delete('/categories/:id', /* auth.ensureAuthenticated, */ categoryRoute.deleteCategoryById);
 
 router.get('/blogs', blogRoute.fetchBlogs);
 router.post('/blogs', blogRoute.createBlog);
+router.get('/blogs/:id', blogRoute.fetchBlogById);
+router.put('/blogs/:id', blogRoute.updateBlog);
+router.delete('/blogs/:id', blogRoute.deleteBlogById);
 
 router.get('/authors', authorRoute.fetchAuthors)
 router.post('/authors', authorRoute.createAuthor);
-
 router.get('/authors/:id', authorRoute.fetchAuthorById);
 router.put('/authors/:id', authorRoute.updateAuthor);
 router.delete('/authors/:id', authorRoute.deleteAuthorById);

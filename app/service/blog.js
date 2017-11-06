@@ -4,7 +4,8 @@ var async = require('async'),
     crypto = require('crypto'),
     mongoose = require('mongoose'),
     moment = require('moment'),
-    ObjectID = require('mongodb').ObjectID;
+    ObjectID = require('mongodb').ObjectID,
+    passwordHash = require('password-hash');
 
 
 //custom modules
@@ -12,19 +13,22 @@ var auth = require('app/helpers/auth'),
     BlogDao = require('app/dao/blog'),
     C = require('app/helpers/constant'),
     log = require('utils/logger')(module),
-    Blog = require('app/models/blog');
+    Blog = require('app/models/blog'),
+    User = require('app/models').User,
+    UserDao = require('app/dao/user');
 
 var UserOperations = {
     createBlog: createBlog,
     userSignin: userSignin,
+    userSignup: userSignup,
     fetchBlogs: fetchBlogs,
-    fetchUserById: fetchUserById,
-    updateUser: updateUser
+    fetchBlogById: fetchBlogById,
+    updateBlog: updateBlog,
+    deleteBlogById: deleteBlogById
 }
 
 function createBlog(blogInfo, callback) {
     log.info('<--------------createBlog---------------->');
-    console.log(blogInfo);
     var blog = new Blog({
         id: ObjectID.toString(),
         name: blogInfo.name,
@@ -47,13 +51,43 @@ function createBlog(blogInfo, callback) {
             if (blogObject) {
                 return callback(null, { statusCode: 409, message: "name already exist" });
             } else {
-                console.log('***********************', blogObject);
                 BlogDao.createBlog(blog, function (err, result) {
                     if (err) {
                         return callback(err);
                     }
-                    console.log('-------------------', result);
                     callback(null, { statusCode: 201, message: "blog created" });
+                });
+            }
+        }
+    ], callback);
+}
+
+function userSignup(userInfo, callback) {
+    log.info('<--------------signup---------------->');
+    var user = new User({
+        id: ObjectID.toString(),
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        username: userInfo.username
+    });
+    var condition = {
+        username: userInfo.username
+    };
+    async.waterfall([
+        function (callback) {
+            UserDao.findUserByCondition(condition, callback);
+        },
+        function (userObject, callback) {
+            if (userObject) {
+                return callback(null, C.okResponse('username already exist'));
+            } else {
+                user.password = passwordHash.generate(userInfo.pwd);
+            
+                UserDao.userSignup(user, function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    callback(null, C.createResponse('user signup successfully'));
                 });
             }
         }
@@ -71,23 +105,19 @@ function userSignin(userInfo, callback) {
         },
         function (userDetail, callback) {
             if (!userDetail) {
-                return callback(null, C.notFoundResponse('user not found with this username'));
+                return callback(null, { message: "invalid username or password", statusCode: 401 });
             } else {
-                validatePassword(userInfo.password, userDetail.password, function (err, res) {
-                    if (err) {
-                        return callback(C.errorResponse(err));
-                    } else if (!res) {
-                        return callback(null, C.unAuthResponse('Invalid username or password'));
-                    }
-                    else if (res) {
-                        callback(null, C.genericResponse(auth.createJWT(userDetail)));
-                    }
-                });
+                var isPasswordCorrect = passwordHash.verify(userInfo.password, userDetail.password)
+                if (!isPasswordCorrect) {
+                    return callback(null, C.unAuthResponse('Invalid username or password'));
+                }
+                else {
+                    callback(null, C.genericResponse(C.createJWT(userDetail), userDetail.firstName));
+                }
             }
         }
     ], callback);
 }
-
 function fetchBlogs(callback) {
     log.info('<--------------fetchBlogs---------------->');
     BlogDao.fetchBlogs(function (err, users) {
@@ -99,12 +129,12 @@ function fetchBlogs(callback) {
 }
 
 
-function fetchUserById(id, callback) {
-    log.info('<--------------fetchUserById---------------->');
+function fetchBlogById(id, callback) {
+    log.info('<--------------fetchBlogById---------------->');
     if (!id) {
-        return callback(null, "please provide userId");
+        return callback(null, "please provide id");
     }
-    UserDao.fetchUserById(id, function (err, users) {
+    BlogDao.fetchBlogById(id, function (err, users) {
         if (err) {
             return callback(err);
         }
@@ -113,12 +143,26 @@ function fetchUserById(id, callback) {
 }
 
 
-function updateUser(id, userInfo, callback) {
-    log.info('<--------------updateUser---------------->');
+function updateBlog(id, blogInfo, callback) {
+    log.info('<--------------updateBlog---------------->');
     if (!id) {
-        return callback(null, "please provide userId");
+        return callback(null, "please provide id");
     }
-    UserDao.updateUser(id, userInfo, function (err, users) {
+    BlogDao.updateBlog(id, blogInfo, function (err, users) {
+        if (err) {
+            return callback(err);
+        }
+        callback(null, users);
+    });
+}
+
+
+function deleteBlogById(id, callback) {
+    log.info('<--------------deleteCategoryById---------------->');
+    if (!id) {
+        return callback(null, "please provide id");
+    }
+    BlogDao.deleteBlogById(id, function (err, users) {
         if (err) {
             return callback(err);
         }

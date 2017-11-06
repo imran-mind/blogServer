@@ -41,7 +41,7 @@ var constants = {
 function decodeToken(authorization, callback) {
     var token = authorization.split(' ')[1];
     try {
-        var payload = jwt.decode(token, config.token.secret);
+        var payload = jwt.decode(token, 'config.token.secret');
         callback(null, payload);
     } catch (err) {
         callback({ message: err.message });
@@ -62,10 +62,10 @@ function createJWT(user) {
         email: user.username,
         iss: 'blogger',
         iat: moment().unix(),
-        exp: moment().add(config.token.expiry, 'seconds').unix()
+        exp: moment().add(3200, 'seconds').unix()
     };
     debug('--->JWT Payload - ', payload);
-    return jwt.encode(payload, config.token.secret);
+    return jwt.encode(payload, 'config.token.secret');
 }
 
 function createRefreshJWT(user) {

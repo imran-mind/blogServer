@@ -2,20 +2,52 @@
 
 require('rootpath');
 var UserService = require('app/service/user'),
-    log = require('utils/logger')(module);
+    log = require('utils/logger')(module),
+    multer = require('multer'),
+    fs = require('fs');
+
+var DIR = './uploads/';
+var upload = multer({ dest: DIR }).single('photo');
 
 var UserOperations = {
     userSignup: userSignup,
     userSignin: userSignin,
     fetchUsers: fetchUsers,
     fetchUserById: fetchUserById,
-    updateUser: updateUser
+    updateUser: updateUser,
+    uploadImage: uploadImage
+}
+
+console.log(__dirname);
+function uploadImage(req, res) {
+
+    console.log(req.params.userId);
+
+    upload(req, res, function (err) {
+        if (err) {
+            console.log(err);
+            return res.status(422).send("an Error occured")
+        }
+        var path = req.file.path;
+        console.log('---------------path------------',req.file);
+        var userInfo = {
+            imageUrl: '/home/imran/angular/blog/blogServer/' + path
+        }
+        UserService.updateUser(req.params.userId, userInfo, function (err, result) {
+            if (err) {
+                return res.status(500).json({ message: "Caught error in uploading file" });
+            }
+            return res.status(200).json({ messge: "upload successfull", statusCode: 200, imageUrl: userInfo.imageUrl });
+        });
+
+    });
+
 }
 
 function userSignup(req, res) {
     log.info('<--------------userSignup---------------->');
     UserService.userSignup(req.body, function (err, result) {
-        console.log('-----------req.body--------------',req.body);
+        console.log('-----------req.body----user----------', req.body);
         if (err) {
             return res.status(500).json(err);
         }
@@ -33,7 +65,7 @@ function userSignin(req, res) {
         if (err) {
             return res.status(500).json(err);
         }
-        res.status(result.statusCode).json(result);
+        res.status(200).json(result);
     });
 }
 

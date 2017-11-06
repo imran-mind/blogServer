@@ -3,8 +3,8 @@
 var async = require('async'),
     crypto = require('crypto'),
     mongoose = require('mongoose'),
-    ObjectID = require('mongodb').ObjectID;
-
+    ObjectID = require('mongodb').ObjectID,
+    passwordHash = require('password-hash');
 
 //custom modules
 var C = require('app/helpers/constant'),
@@ -42,14 +42,13 @@ function userSignup(userInfo, callback) {
             if (userObject) {
                 return callback(null, C.okResponse('username already exist'));
             } else {
-                saltAndHash(userInfo.password, function (hash) {
-                    user.password = hash;
-                    UserDao.userSignup(user, function (err) {
-                        if (err) {
-                            return callback(err);
-                        }
-                        callback(null, C.createResponse('user signup successfully'));
-                    });
+                user.password = passwordHash.generate(userInfo.pwd);
+                console.log('---------new hashed password0---------', user.password);
+                UserDao.userSignup(user, function (err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                    callback(null, C.createResponse('user signup successfully'));
                 });
             }
         }
@@ -67,22 +66,17 @@ function userSignin(userInfo, callback) {
         },
         function (userDetail, callback) {
             if (!userDetail) {
-                return callback(null, C.notFoundResponse('Invalid username or password', 401));
+                return callback(null, { message: "invalid username or password", statusCode: 401 });
             } else {
-                callback(null, C.genericResponse(C.createJWT(userDetail), userDetail.firstName));
-                /* validatePassword(userInfo.password, userDetail.password, function (err, res) {
-                    console.log('*************************** ', userDetail);
-                    console.log(res);
-                    if (err) {
-                        return callback(C.errorResponse(err));
-                    }
-                    else if (!res) {
-                        return callback(null, C.unAuthResponse('Invalid username or password'));
-                    }
-                    else if (res) {
-                        callback(null, C.genericResponse(C.createJWT(userDetail), userDetail.firstName));
-                    }
-                }); */
+                // callback(null, C.genericResponse(/* C.createJWT(userDetail), */ userDetail.firstName));
+                var isPasswordCorrect = passwordHash.verify(userInfo.password, userDetail.password)
+                console.log('*************************** ', isPasswordCorrect);
+                if (!isPasswordCorrect) {
+                    return callback(null, C.unAuthResponse('Invalid username or password'));
+                }
+                else {
+                    callback(null, C.genericResponse(C.createJWT(userDetail), userDetail.firstName));
+                }
             }
         }
     ], callback);
@@ -118,6 +112,8 @@ function updateUser(id, userInfo, callback) {
     if (!id) {
         return callback(null, "please provide userId");
     }
+    console.log('---service userid ---', id);
+    console.log('-------userInfo----', userInfo);
     UserDao.updateUser(id, userInfo, function (err, users) {
         if (err) {
             return callback(err);

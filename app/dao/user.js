@@ -47,7 +47,7 @@ function fetchUserById(id, callback) {
 function findUserByCondition(condition, callback) {
     log.info('----------findUserByCondition------------');
     console.log(condition);
-    User.findOne(condition, {  }, function (err, user) {
+    User.findOne(condition, {}, function (err, user) {
         if (err) {
             return callback(err);
         }
@@ -57,6 +57,8 @@ function findUserByCondition(condition, callback) {
 
 function updateUser(id, userInfo, callback) {
     log.info('----------updateUser------------');
+    console.log('------user dao--id---', id);
+    console.log('------user dao--userinfo---', userInfo);
     User.update({ _id: id }, userInfo, function (err, users) {
         if (err) {
             return callback(err);
